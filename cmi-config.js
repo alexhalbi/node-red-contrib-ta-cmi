@@ -184,7 +184,7 @@ module.exports = function (RED) {
 		}, 1000);
 
 		//Setup repeater
-		node.repeaterSetup = function () {
+		/*node.repeaterSetup = function () {
 			let repeat = config.interval;
 			if (repeat && !isNaN(repeat) && repeat > 0) {
 				repeat = repeat * 1000 * 60; // in milliseconds
@@ -198,7 +198,14 @@ module.exports = function (RED) {
 			}
 		} // node.repeaterSetup
 
-		node.repeaterSetup();
+		node.repeaterSetup();*/
+
+		node.on('input', function(msg) {
+			// This code is executed repeated
+			if (debug) { console.log(nodeName + 'Repeatingly fired ' + dateTime()) };
+			httpGet(config.ip, node.credentials.user, node.credentials.password, canAddr); // continuous http reqad requests to CMI
+		});
+
 		if (debug) { console.log(nodeName + 'Init end') }
 
 		node.on('close', function () {

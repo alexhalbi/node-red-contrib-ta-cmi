@@ -15,7 +15,7 @@ module.exports = function (RED) {
 		"NEIN/JA", "", "°C", "", "", "", "€", "$", "g/m³", "", "°", "", "°", "Sek", "", "%", "Uhr", "", "", "A", "", "mbar", "Pa", "ppm", "", "W", "t", "kg", "g", "cm", "K", "lx"];
 		//IF "AUS/EIN" or "NEIN/JA" are changed, change it below in the code as well (search for "NEIN/JA" in the code)
 
-	const cmiSecitons = ["Logging Analog", "Logging Digital","Inputs","Outputs","Network Analog","Network Digital"];
+	const cmiSecitons = ["Logging Analog", "Logging Digital","Inputs","Outputs","Network Analog","Network Digital","DL-Bus"];
 
 	function dateTime(ts, withDate) {
 		if (ts) { // Date and Time as a JS-Timestamp (in Millisekonds, as UTC)

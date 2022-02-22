@@ -61,9 +61,9 @@ module.exports = function (RED) {
 		if (debugDetailed) { console.log(nodeName + '>>> name: ' + node.name) }
 
 		// Retrieve the values of config node in this node
-		this.cmi = RED.nodes.getNode(config.cmi);
-		if (debugDetailed) { console.log(nodeName + 'Config: ' + JSON.stringify(this.cmi, null, 5)) }
-		if (debugDetailed) { console.log(nodeName + 'Get: ' + JSON.stringify(this, null, 5)) }
+		// this.cmi = RED.nodes.getNode(config.cmi);
+		// if (debugDetailed) { console.log(nodeName + 'Config: ' + JSON.stringify(this.cmi, null, 5)) }
+		// if (debugDetailed) { console.log(nodeName + 'Get: ' + JSON.stringify(this, null, 5)) }
 
 		//save all (local node and config node) into node{}
 		var node = this;
@@ -74,9 +74,9 @@ module.exports = function (RED) {
 		node.status({ fill: "yellow", shape: "dot", text: "cmi.status.waiting" });
 
 		//
-		// register listener
+		// handle input
 		//
-		node.cmi && node.cmi.registerListener(node, function (msg) {
+		node.on('input', function(msg) {
 			if (debug) { console.log(nodeName + RED._("cmi.logging.newDataArrived") + config.name + ": " + msg.payload) };
 
 			// start checking Answer and show status in the node.status
@@ -223,13 +223,6 @@ module.exports = function (RED) {
 				console.log(nodeName + '[' + config.name + '] Severity           : ' + config.severity);
 				console.log(nodeName + config.name + ': ' + msg.data.Data["Logging Analog"][config.item].Value.Value + ' ' + cmiUnits[msg.data.Data["Logging Analog"][config.item].Value.Unit]);
 			}
-		});
-
-		//
-		// deregister listener
-		//
-		node.on('close', function () {
-			node.cmi && node.cmi.deregisterListener(node);
 		});
 
 		if (debug) { console.log(nodeName + "Init done") };

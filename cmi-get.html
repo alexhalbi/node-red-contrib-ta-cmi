@@ -5,10 +5,6 @@
         //color: '#0669B2', TA blue
         color: '#5AA5D5',
         defaults: {
-            cmi: { 
-                value: "", 
-                type: "cmi config" 
-            },
             name: { 
                 value: "", 
                 required: true
@@ -49,7 +45,7 @@
                 }
             }
         },
-        inputs: 0,
+        inputs: 1,
         outputs: 1,
         icon: "icon.png",
         label: function () {
@@ -75,10 +71,6 @@
 </script>
 
 <script type="text/html" data-template-name="cmi in">
-    <div class="form-row">
-        <label for="node-input-cmi"><i class="fa fa-bookmark"></i> <span data-i18n="cmi.label.cmi"></label>
-        <input type="text" id="node-input-cmi">
-    </div>
 	<div class="form-tips"> <span data-i18n="cmi.tips.tip1"></span></div>
 	<div class="form-row"> &nbsp;</div>
 	<div class="form-row">

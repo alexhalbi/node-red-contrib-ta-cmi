@@ -16,7 +16,8 @@
             "interval2": "minute(s) to query for new Data"
         },
         "tips": {
-            "tip1": "You must use the data from the 'Expert' account in case sensitive letters. The user or guest account does not work."
+            "tip1": "You must use the data from the 'Expert' account in case sensitive letters. The user or guest account does not work.",
+            "tip2": "Every C.M.I. from which you want to read out data must be created only once."
         }
     }
 }

@@ -1,0 +1,63 @@
+<script type="text/javascript">
+	RED.nodes.registerType('cmi get data', {
+		category: 'network',
+        inputs: 1,
+		outputs: 1,
+		defaults: {
+			description: { 
+				value: "TA C.M.I.", 
+				required: true 
+			},
+			ip: {
+				value: "", 
+				required: true
+			},
+			/*
+			status: { 
+				value: "not tested"
+			},
+			*/
+            canNode: {
+                value: 1,
+                required: true,
+                validate(v){
+                    const n = Number(v);
+                    return RED.validators.number()(v) && ((n > 0) && (n < 62));
+                }
+            }
+		},
+		credentials: {
+			user: { type: "text" },
+			password: { type: "password" }
+		},
+		label: function () {
+			return this.description || "TA C.M.I.";
+		}
+	});
+</script>
+
+<script type="text/html" data-template-name="cmi get data">
+    <div class="form-tips"> <span data-i18n="cmi.tips.tip2"></span></div>
+    <div class="form-row">
+        <label for="node-input-description"><i class="fa fa-bookmark"></i> <span data-i18n="cmi.label.description"></span></label>
+        <input type="text" id="node-input-description" style="width: 65%" placeholder="My C.M.I.">
+    </div>
+   <div class="form-row">
+        <label for="node-input-ip"><i class="fa fa-globe"></i> <span data-i18n="cmi.label.ip"></span></label>
+        <input type="text" id="node-input-ip" style="width: 65%" placeholder="192.168.x.x">
+    </div>
+	<div class="form-row">
+		<label for="node-input-user"><i class="fa fa-user"></i> <span data-i18n="cmi.label.usr"></span></label>
+		<input type="text" id="node-input-user" style="width: 65%">
+	</div>
+	<div class="form-row">
+		<label for="node-input-password"> <i class="fa fa-lock"></i> <span data-i18n="cmi.label.pwd"></span></label>
+		<input type="password" id="node-input-password" style="width: 65%">
+	</div>
+	<div class="form-row">
+		<label for="node-input-canNode"><i class="fa fa-share-alt"></i> <span data-i18n="cmi.label.canNode1"></span></label>
+		<input type="number" id="node-input-canNode" min="1" max ="62" step = "any" placeholder="1" style="width: 60px;">
+		<span data-i18n="cmi.label.canNode2"></span>
+	</div>
+	<div class="form-tips"> <span data-i18n="cmi.tips.tip1"></span></div>
+</script>

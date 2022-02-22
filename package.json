@@ -23,7 +23,7 @@
   "node-red": {
     "nodes": {
       "ta-cmi-get": "cmi-get.js",
-      "ta-cmi-config": "cmi-config.js"
+      "ta-cmi-get-data": "cmi-get-data.js"
     }
   },
   "bugs": {

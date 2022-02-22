@@ -7,47 +7,12 @@ const http = require('http');
 
 module.exports = function (RED) {
 
-	const nodeName = 'NODE-RED-CONTRIB-TA-CMI (config): ';
+	const nodeName = 'NODE-RED-CONTRIB-TA-CMI (get-data): ';
 	const debug = false;
 	const debugDetailed = false;
 	const liveData = true;
 
-	function cmiConfigNode(config) {
-
-		//
-		// register listener node
-		//
-		this.registerListener = function (listenerNode, callback) {
-			if (debugDetailed) { console.log(nodeName + "callback: " + callback) };
-			if (debugDetailed) { console.log(nodeName + "listenerNode: " + JSON.stringify(listenerNode, null, 5)) };
-			if (debugDetailed) { console.log(nodeName + 'node.Listeners: ' + JSON.stringify(node.Listeners, null, 5)) };
-			node.Listeners[listenerNode.id] = callback;
-			if (debugDetailed) { console.log(nodeName + 'node.Listeners[listenerNode.id]:' + JSON.stringify(node.Listeners[listenerNode.id], null, 5)) };
-		}; // this.registerListener
-
-		//
-		// deregister listener node
-		//
-		this.deregisterListener = function (listenerNode) {
-			if (debugDetailed) { console.log(nodeName + 'deregister: ' + listenerNode.id) };
-			delete node.Listeners[listenerNode.id];
-		};
-
-		//
-		// emit notification that new data arrived to all nodes
-		//
-		this.notifyChange = function (msg) {
-			if (debugDetailed) { console.log(nodeName + JSON.stringify(msg, null, 2)) };
-			if (debugDetailed) { console.log(nodeName + JSON.stringify(node.Listeners, null, 2)) };
-
-			async.each(node.Listeners, function (listener, callback) {
-				if (debugDetailed) { console.log(nodeName + JSON.stringify(msg, null, 2)) };
-				listener(JSON.parse(JSON.stringify(msg)));
-				callback(null);
-			});
-		}; // this.notifyChange
-
-
+	function cmiGetData(config) {
 		///
 		/// dateTime
 		///
@@ -109,7 +74,7 @@ module.exports = function (RED) {
 							res.payload = 'Call #' + callNumber + ' to ' + hostname + ' returning ' + res.httpStatusCode + ':' + res.httpStatusMessage + ') from config node';
 							res.topic = "EMIT #" + callNumber;
 							callNumber = callNumber + 1;
-							node.notifyChange(res); // report the results from CMI to the node
+							node.send(res); // report the results from CMI to the node
 							})
 					}
 					else {
@@ -119,7 +84,7 @@ module.exports = function (RED) {
 						res.payload = 'Call #' + callNumber + ' to ' + hostname + ' returning ' + res.httpStatusCode + ':' + res.httpStatusMessage + ') from config node';
 						res.topic = "EMIT #" + callNumber;
 						callNumber = callNumber + 1;
-						node.notifyChange(res); // report the results from CMI to the node
+						node.send(res); // report the results from CMI to the node
 					}
 				}).on('error', error => {
 					res.data = {};
@@ -128,7 +93,7 @@ module.exports = function (RED) {
 					res.payload = 'Call #' + callNumber + ' to ' + hostname + ' returning ' + res.httpStatusCode + ':' + res.httpStatusMessage + ') from config node';
 					res.topic = "EMIT #" + callNumber;
 					callNumber = callNumber + 1;
-					node.notifyChange(res); // report the results from CMI to the node
+					node.send(res); // report the results from CMI to the node
 			})
 				httpResult.end();
 
@@ -147,7 +112,7 @@ module.exports = function (RED) {
 				res.payload = 'Call #' + callNumber + ' to ' + hostname + ' returning ' + res.data["Status code"] + ':' + res.data.Status + ' (' + dateTime(res.data.Header.Timestamp) + ') from config node'
 				res.topic = "EMIT #" + callNumber;
 				callNumber = callNumber + 1;
-				node.notifyChange(res); // report the results from CMI to the node
+				node.send(res); // report the results from CMI to the node
 			} // if (liveData)
 
 		} // function httpGet
@@ -161,7 +126,6 @@ module.exports = function (RED) {
 		var node = this;
 		var callNumber = 0;
 		node.Listeners = {};
-		node.nodeId = node.id.replace(/\./g, '_');
 		var canAddr = "1";
 
 		if (typeof config.canNode !== "undefined") {
@@ -169,69 +133,29 @@ module.exports = function (RED) {
 		}
 
 		if (debugDetailed) {
-			console.log(nodeName + 'node description = ' + config.description);
-			console.log(nodeName + 'node id          = ' + node.nodeId);
-			console.log(nodeName + "ip               = " + config.ip);
-			console.log(nodeName + "canNode          = " + config.canNode);
-			console.log(nodeName + "interval         = " + config.interval);
-			console.log(nodeName + "user             = " + node.credentials.user);
-			console.log(nodeName + "password         = " + node.credentials.password);
+			node.log(nodeName + 'node description = ' + config.description);
+			node.log(nodeName + "ip               = " + config.ip);
+			node.log(nodeName + "canNode          = " + config.canNode);
+			node.log(nodeName + "user             = " + node.credentials.user);
+			// console.log(nodeName + "password         = " + node.credentials.password);
 		} // if (debug)
 
-		// start/try to read data from CMI 1 Second after initialisation
-		setTimeout(function () {
-			httpGet(config.ip, node.credentials.user, node.credentials.password, canAddr); // 1. http read request to CMI after 1 second
-		}, 1000);
-
-		//Setup repeater
-		/*node.repeaterSetup = function () {
-			let repeat = config.interval;
-			if (repeat && !isNaN(repeat) && repeat > 0) {
-				repeat = repeat * 1000 * 60; // in milliseconds
-//				repeat = repeat / 2; // overwrite setting in UI for quicker testing results - remove later!!!
-				if (debug) { console.log(nodeName + "starting repeater setup with interval " + repeat + " ms") };
-				this.repeaterID = setInterval(function () {
-					// This code is executed repeated
-					if (debug) { console.log(nodeName + 'Repeatingly fired ' + dateTime()) };
-					httpGet(config.ip, node.credentials.user, node.credentials.password, canAddr); // continuous http reqad requests to CMI
-				}, repeat);
-			}
-		} // node.repeaterSetup
-
-		node.repeaterSetup();*/
-
 		node.on('input', function(msg) {
-			// This code is executed repeated
-			if (debug) { console.log(nodeName + 'Repeatingly fired ' + dateTime()) };
-			httpGet(config.ip, node.credentials.user, node.credentials.password, canAddr); // continuous http reqad requests to CMI
+			if (debug) { node.log(nodeName + "Get New Data from CMI"); }
+			httpGet(config.ip, node.credentials.user, node.credentials.password, canAddr)
 		});
 
-		if (debug) { console.log(nodeName + 'Init end') }
-
-		node.on('close', function () {
-			if (debug) { console.log(nodeName + 'INIT END: NODE-RED-CONTRIB-HTTP') };
-		})
-
-	} // cmiConfigNode (config);
+	} // cmiGetData (config);
 
 	//
 	// register node and get username and password from config
 	//
-	RED.nodes.registerType("cmi config", cmiConfigNode, {
+	RED.nodes.registerType("cmi get data", cmiGetData, {
 		credentials: {
 			user: { type: "text" },
 			password: { type: "password" }
 		}
 	});
-
-	cmiConfigNode.prototype.close = function () {
-		if (debug) { console.log(nodeName + "stopping repeater...") };
-		if (this.repeaterID != null) {
-			clearInterval(this.repeaterID);
-			if (debug) { console.log(nodeName + "repeater stopped") };
-		}
-		// console.log("finished stopping repeater");
-	}; //cmiConfigNode.prototype.close
 
 };
 

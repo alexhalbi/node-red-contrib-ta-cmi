@@ -16,7 +16,8 @@
             "interval2": "Minute(n) zur Abfrage neuer Daten"
         },
         "tips": {
-            "tip1": "Sie müssen die Daten des Kontos 'Experte' verwenden und auf die Groß-/Kleinschreibung achten. Das Anwender- oder Gastkonto funktioniert nicht."
+            "tip1": "Sie müssen die Daten des Kontos 'Experte' verwenden und auf die Groß-/Kleinschreibung achten. Das Anwender- oder Gastkonto funktioniert nicht.",
+            "tip2": "Jedes C.M.I. von dem Sie Daten auslesen wollen, muss nur einmal angelegt werden."
         }
     }
 }

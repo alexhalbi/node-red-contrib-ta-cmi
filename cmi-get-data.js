@@ -68,9 +68,16 @@ module.exports = function (RED) {
 						httpResult.on('end', () => {
 							// parse http message into object
 							if (debug) { console.log(nodeName + "Start parsing HTTP Data") };
-							res.data = JSON.parse(sData);
-							res.httpStatusCode = httpResult.statusCode;
-							res.httpStatusMessage = httpResult.statusMessage;
+							try {
+								res.data = JSON.parse(sData);
+								res.httpStatusCode = httpResult.statusCode;
+								res.httpStatusMessage = httpResult.statusMessage;
+							} catch(err) {
+								console.log(nodeName + "Error parsing result: " + err.message);
+								res.data = {};
+								res.httpStatusCode = '998';
+								res.httpStatusMessage = "RESULT FROM HOST NOT PARSEABLE (" + err.message + ")";
+							}
 							res.payload = 'Call #' + callNumber + ' to ' + hostname + ' returning ' + res.httpStatusCode + ':' + res.httpStatusMessage + ') from config node';
 							res.topic = "EMIT #" + callNumber;
 							callNumber = callNumber + 1;
